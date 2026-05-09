@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Apothecary Admin — R.A.H.U. Records</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #080808;
+    --deep: #0d0d0d;
+    --card: #111111;
+    --border: #222222;
+    --gold: #c9a84c;
+    --gold-light: #e8c87a;
+    --white: #f0ece4;
+    --muted: #888880;
+    --green: #4a9e6b;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    padding: 40px 20px;
+  }
+
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 50px;
+  }
+
+  .header h1 {
+    font-family: 'Cinzel', serif;
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--gold);
+    letter-spacing: 4px;
+    margin-bottom: 8px;
+  }
+
+  .header p {
+    color: var(--muted);
+    font-size: 13px;
+    letter-spacing: 1px;
+  }
+
+  .form-section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 32px;
+    margin-bottom: 24px;
+  }
+
+  .form-section h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 4px;
+    color: var(--gold);
+    margin-bottom: 24px;
+    text-transform: uppercase;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .form-group.full { grid-column: 1 / -1; }
+
+  label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--muted);
+    text-transform: uppercase;
+    font-family: 'Cinzel', serif;
+  }
+
+  input, select, textarea {
+    background: #0a0a0a;
+    border: 1px solid var(--border);
+    color: var(--white);
+    padding: 12px 14px;
+    font-family: 'Jost', sans-serif;
+    font-size: 13px;
+    font-weight: 300;
+    outline: none;
+    transition: border-color 0.3s;
+    width: 100%;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--gold);
+  }
+
+  select option { background: #111; }
+
+  textarea {
+    resize: vertical;
+    min-height: 80px;
+    line-height: 1.6;
+  }
+
+  .tag-note {
+    font-size: 11px;
+    color: var(--gold);
+    margin-top: 4px;
+    opacity: 0.7;
+  }
+
+  .generate-btn {
+    width: 100%;
+    padding: 16px;
+    background: var(--gold);
+    color: var(--black);
+    border: none;
+    cursor: pointer;
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    font-weight: 600;
+    transition: background 0.3s;
+    margin-top: 24px;
+  }
+
+  .generate-btn:hover { background: var(--gold-light); }
+
+  .output-section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 32px;
+    display: none;
+  }
+
+  .output-section.visible { display: block; }
+
+  .output-section h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 4px;
+    color: var(--gold);
+    margin-bottom: 20px;
+    text-transform: uppercase;
+  }
+
+  .preview-card {
+    background: #0a0a0a;
+    border: 1px solid rgba(201,168,76,0.3);
+    padding: 22px;
+    margin-bottom: 24px;
+    position: relative;
+  }
+
+  .preview-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+
+  .preview-badge {
+    display: inline-block;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--gold);
+    border: 1px solid rgba(201,168,76,0.3);
+    padding: 3px 8px;
+    margin-bottom: 12px;
+    font-family: 'Cinzel', serif;
+  }
+
+  .preview-emoji { font-size: 28px; margin-bottom: 12px; display: block; }
+
+  .preview-name {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 6px;
+    letter-spacing: 0.5px;
+    line-height: 1.4;
+  }
+
+  .preview-brand {
+    font-size: 10px;
+    color: var(--gold);
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    opacity: 0.8;
+  }
+
+  .preview-desc {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 16px;
+  }
+
+  .preview-btn {
+    display: block;
+    padding: 9px 18px;
+    background: transparent;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    text-align: center;
+    text-decoration: none;
+  }
+
+  .code-box {
+    background: #050505;
+    border: 1px solid var(--border);
+    padding: 20px;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    color: #7ec8a4;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+
+  .copy-btn {
+    padding: 12px 24px;
+    background: transparent;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    cursor: pointer;
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    transition: all 0.3s;
+  }
+
+  .copy-btn:hover { background: var(--gold); color: var(--black); }
+  .copy-btn.copied { background: var(--green); border-color: var(--green); color: white; }
+
+  .instructions {
+    background: #0a0a0a;
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--gold);
+    padding: 20px;
+    margin-top: 24px;
+  }
+
+  .instructions h3 {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--gold);
+    margin-bottom: 14px;
+    text-transform: uppercase;
+  }
+
+  .instructions ol {
+    list-style: none;
+    counter-reset: step;
+  }
+
+  .instructions ol li {
+    counter-increment: step;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.8;
+    padding-left: 24px;
+    position: relative;
+    margin-bottom: 6px;
+  }
+
+  .instructions ol li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    color: var(--gold);
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .instructions code {
+    background: #1a1a1a;
+    color: #7ec8a4;
+    padding: 1px 6px;
+    font-family: monospace;
+    font-size: 11px;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 20px 0;
+  }
+
+  @media (max-width: 600px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .form-group.full { grid-column: 1; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <h1>Apothecary Admin</h1>
+    <p>R.A.H.U. Records · Product Card Generator</p>
+  </div>
+
+  <div class="form-section">
+    <h2>Product Details</h2>
+    <div class="form-grid">
+
+      <div class="form-group">
+        <label>Emoji Icon</label>
+        <input type="text" id="emoji" placeholder="🍄" maxlength="2">
+      </div>
+
+      <div class="form-group">
+        <label>Badge Label</label>
+        <input type="text" id="badge" placeholder="Best Seller · Top Rated · Organic...">
+      </div>
+
+      <div class="form-group full">
+        <label>Product Name</label>
+        <input type="text" id="name" placeholder="Reishi Mushroom Extract Powder">
+      </div>
+
+      <div class="form-group">
+        <label>Brand</label>
+        <input type="text" id="brand" placeholder="Real Mushrooms">
+      </div>
+
+      <div class="form-group">
+        <label>Category</label>
+        <select id="category">
+          <option value="tcm">🌿 TCM & Herbs</option>
+          <option value="adaptogens">💊 Adaptogens</option>
+          <option value="oils">🫚 Essential Oils</option>
+          <option value="crystals">🔮 Crystals</option>
+          <option value="teas">🫖 Teas & Tonics</option>
+          <option value="spiritual">🙏 Spiritual Tools</option>
+          <option value="books">📖 Books</option>
+          <option value="lifestyle">🧖 Lifestyle</option>
+        </select>
+      </div>
+
+      <div class="form-group full">
+        <label>Description (1-2 sentences)</label>
+        <textarea id="desc" placeholder="What makes this product special. Why you're recommending it. Keep it real and direct."></textarea>
+      </div>
+
+      <div class="form-group full">
+        <label>Amazon Product URL or Search URL</label>
+        <input type="text" id="url" placeholder="https://www.amazon.com/s?k=Real+Mushrooms+Reishi+Powder">
+        <div class="tag-note">⚡ Your rahurecords-20 tag will be added automatically</div>
+      </div>
+
+    </div>
+
+    <button class="generate-btn" onclick="generateCard()">Generate Product Card</button>
+  </div>
+
+  <div class="output-section" id="output">
+    <h2>Preview & Code</h2>
+
+    <div class="preview-card" id="previewCard">
+      <span class="preview-badge" id="prevBadge"></span>
+      <span class="preview-emoji" id="prevEmoji"></span>
+      <div class="preview-name" id="prevName"></div>
+      <div class="preview-brand" id="prevBrand"></div>
+      <div class="preview-desc" id="prevDesc"></div>
+      <a class="preview-btn" id="prevBtn" target="_blank">Shop on Amazon</a>
+    </div>
+
+    <div class="divider"></div>
+
+    <p style="font-size:11px; color: var(--muted); margin-bottom: 12px; letter-spacing: 1px;">COPY THIS HTML → PASTE INTO YOUR APOTHECARY PAGE</p>
+    <div class="code-box" id="codeOutput"></div>
+    <button class="copy-btn" id="copyBtn" onclick="copyCode()">Copy Code</button>
+
+    <div class="instructions">
+      <h3>How to Add to Your Site</h3>
+      <ol>
+        <li>Copy the code above</li>
+        <li>Open your <code>rahu-apothecary-v2.html</code> file in any text editor</li>
+        <li>Find the category section you want — look for <code>&lt;!-- TCM & HERBS --&gt;</code> etc.</li>
+        <li>Find the <code>&lt;/div&gt;</code> that closes the <code>product-grid</code> in that section</li>
+        <li>Paste your new card just before that closing tag</li>
+        <li>Save and re-upload to Netlify</li>
+      </ol>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+  function cleanUrl(url) {
+    if (!url) return '#';
+    url = url.trim();
+    // Remove existing tag if present
+    url = url.replace(/[&?]tag=[^&]*/g, '');
+    // Add rahurecords-20 tag
+    if (url.includes('amazon.com')) {
+      if (url.includes('?')) {
+        url += '&tag=rahurecords-20';
+      } else {
+        url += '?tag=rahurecords-20';
+      }
+    }
+    return url;
+  }
+
+  function generateCard() {
+    const emoji = document.getElementById('emoji').value.trim() || '✨';
+    const badge = document.getElementById('badge').value.trim() || 'Curated';
+    const name = document.getElementById('name').value.trim();
+    const brand = document.getElementById('brand').value.trim();
+    const desc = document.getElementById('desc').value.trim();
+    const rawUrl = document.getElementById('url').value.trim();
+
+    if (!name || !desc || !rawUrl) {
+      alert('Please fill in Product Name, Description, and URL.');
+      return;
+    }
+
+    const url = cleanUrl(rawUrl);
+
+    // Update preview
+    document.getElementById('prevBadge').textContent = badge;
+    document.getElementById('prevEmoji').textContent = emoji;
+    document.getElementById('prevName').textContent = name;
+    document.getElementById('prevBrand').textContent = brand;
+    document.getElementById('prevDesc').textContent = desc;
+    document.getElementById('prevBtn').href = url;
+
+    // Generate code
+    const code = `<div class="product-card">
+  <span class="product-badge">${escHtml(badge)}</span>
+  <span class="product-emoji">${emoji}</span>
+  <div class="product-name">${escHtml(name)}</div>
+  <div class="product-brand">${escHtml(brand)}</div>
+  <div class="product-desc">${escHtml(desc)}</div>
+  <a href="${escHtml(url)}" target="_blank" class="shop-btn">Shop on Amazon</a>
+</div>`;
+
+    document.getElementById('codeOutput').textContent = code;
+
+    // Show output
+    document.getElementById('output').classList.add('visible');
+    document.getElementById('output').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    // Reset copy btn
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = 'Copy Code';
+    btn.classList.remove('copied');
+  }
+
+  function copyCode() {
+    const code = document.getElementById('codeOutput').textContent;
+    navigator.clipboard.writeText(code).then(() => {
+      const btn = document.getElementById('copyBtn');
+      btn.textContent = 'Copied ✓';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = 'Copy Code';
+        btn.classList.remove('copied');
+      }, 2500);
+    });
+  }
+
+  function escHtml(str) {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+</script>
+
+</body>
+</html>
