@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>R.A.H.U. Records</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@200;300;400;500;700;900&display=swap" rel="stylesheet"/>
+<style>
+:root{--black:#000;--black-2:#080808;--black-3:#0f0f0f;--white:#fff;--gold:#b8922a;--gold-bright:#d4a93a;--red:#c0170a;--border:rgba(255,255,255,.07);--border-gold:rgba(184,146,42,.25);}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:#000;color:#fff;font-family:'Montserrat',sans-serif;overflow-x:hidden;cursor:none;}
+.cur-dot{width:8px;height:8px;border-radius:50%;background:#fff;position:fixed;transform:translate(-50%,-50%);z-index:99999;pointer-events:none;mix-blend-mode:difference;}
+.cur-ring{width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.35);position:fixed;transform:translate(-50%,-50%);z-index:99998;pointer-events:none;transition:width .3s,height .3s,border-color .3s;}
+.cur-ring.hov{width:68px;height:68px;border-color:#d4a93a;}
+.grain{position:fixed;inset:0;z-index:9999;pointer-events:none;opacity:.03;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");animation:grain .4s steps(1) infinite;}
+@keyframes grain{0%{transform:translate(0,0)}25%{transform:translate(-2%,-1%)}50%{transform:translate(1%,2%)}75%{transform:translate(-1%,1%)}}
+nav{position:fixed;top:0;width:100%;z-index:1000;padding:22px 5%;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(180deg,rgba(0,0,0,.85) 0%,transparent 100%);}
+nav::after{content:'';position:absolute;bottom:0;left:5%;right:5%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.07),transparent);}
+.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.35em;color:#fff;text-decoration:none;}
+.nav-logo em{color:#b8922a;font-style:normal;}
+.nav-links{display:flex;gap:2.5rem;list-style:none;}
+.nav-links a{font-size:.58rem;font-weight:500;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.5);text-decoration:none;transition:color .3s;}
+.nav-links a:hover{color:#fff;}
+.nav-demo{font-size:.58rem;font-weight:700;letter-spacing:.25em;text-transform:uppercase;padding:9px 20px;border:1px solid rgba(255,255,255,.5);color:#fff;text-decoration:none;transition:all .3s;}
+.nav-demo:hover{background:#fff;color:#000;}
+.hero-wrap{width:100%;position:relative;background:#000;min-height:60vh;display:flex;align-items:center;justify-content:center;}
+.hero-wrap img{width:100%;height:auto;display:block;opacity:.5;}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.4) 0%,rgba(0,0,0,0) 30%,rgba(0,0,0,0) 70%,rgba(0,0,0,.95) 100%);pointer-events:none;}
+.hero-logo{position:absolute;bottom:2.5rem;left:50%;transform:translateX(-50%);text-align:center;z-index:5;white-space:nowrap;}
+.hero-label{font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,5vw,4.5rem);letter-spacing:.35em;color:#fff;display:block;text-shadow:0 2px 40px rgba(0,0,0,.9);}
+.hero-sub{font-family:'Cormorant Garamond',serif;font-size:clamp(.65rem,1.2vw,.95rem);font-style:italic;font-weight:300;letter-spacing:.4em;color:rgba(255,255,255,.55);display:block;margin-top:.3rem;}
+.s{padding:100px 5%;}
+.s-lbl{font-size:.52rem;font-weight:500;letter-spacing:.5em;text-transform:uppercase;color:#b8922a;margin-bottom:1.4rem;display:block;}
+.s-ttl{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.5rem,5vw,5rem);letter-spacing:.06em;line-height:.9;color:#fff;}
+.s-ttl em{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;color:rgba(255,255,255,.5);}
+.s-rule{width:38px;height:1px;background:#b8922a;margin:1.8rem 0 2.8rem;display:block;}
+#about{display:grid;grid-template-columns:1fr 1fr;gap:0;padding:0;}
+.ab-l{padding:100px 7% 100px 5%;border-right:1px solid rgba(255,255,255,.07);display:flex;flex-direction:column;justify-content:center;}
+.ab-r{background:#0f0f0f;display:flex;align-items:center;justify-content:center;min-height:500px;position:relative;}
+.ab-r::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 80% at 50% 50%,rgba(184,146,42,.04) 0%,transparent 70%);}
+.ab-r-inner{padding:60px;position:relative;z-index:2;}
+.big-q{font-family:'Cormorant Garamond',serif;font-size:clamp(1.6rem,3vw,2.8rem);font-style:italic;font-weight:300;line-height:1.45;color:#fff;}
+.big-q strong{font-style:normal;font-weight:600;color:#d4a93a;}
+.ab-body{font-size:.82rem;font-weight:300;line-height:2;color:rgba(255,255,255,.45);margin-bottom:1.3rem;}
+#artists{background:#080808;padding:100px 5%;}
+.ar-grid{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid rgba(255,255,255,.07);margin-top:2.5rem;}
+.ar-row-2{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid rgba(255,255,255,.07);border-top:none;}
+.ar-card{border-right:1px solid rgba(255,255,255,.07);position:relative;overflow:hidden;transition:background .5s;cursor:pointer;}
+.ar-card:last-child{border-right:none;}
+.ar-card:hover{background:#0f0f0f;}
+.ar-bar{position:absolute;bottom:0;left:0;right:0;height:2px;background:#b8922a;transform:scaleX(0);transform-origin:left;transition:transform .5s;}
+.ar-card:hover .ar-bar{transform:scaleX(1);}
+.ar-card:hover .ar-icon{transform:scale(1.06);}
+.ar-icon-wrap{height:190px;display:flex;align-items:center;justify-content:center;border-bottom:1px solid rgba(255,255,255,.07);position:relative;overflow:hidden;}
+.ar-icon-wrap::before{content:'';position:absolute;inset:0;opacity:.06;transition:opacity .5s;}
+.ar-card:hover .ar-icon-wrap::before{opacity:.14;}
+.c-dj .ar-icon-wrap::before{background:radial-gradient(circle,#ff4400,transparent 70%);}
+.c-rahu .ar-icon-wrap::before{background:radial-gradient(circle,#b8922a,transparent 70%);}
+.c-demi .ar-icon-wrap::before{background:radial-gradient(circle,#7722cc,transparent 70%);}
+.c-akz .ar-icon-wrap::before{background:radial-gradient(circle,#2244cc,transparent 70%);}
+.c-bliss .ar-icon-wrap::before{background:radial-gradient(circle,#cc2266,transparent 70%);}
+.c-lunita .ar-icon-wrap::before{background:radial-gradient(circle,#22ccaa,transparent 70%);}
+.c-kash .ar-icon-wrap::before{background:radial-gradient(circle,#cc8822,transparent 70%);}
+.ar-icon{font-size:3.5rem;position:relative;z-index:2;transition:transform .5s;}
+.ar-num{position:absolute;top:1rem;left:1.3rem;font-family:'Cormorant Garamond',serif;font-size:.72rem;font-style:italic;color:rgba(255,255,255,.18);}
+.ar-body{padding:1.6rem 1.5rem 2rem;}
+.ar-name{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:.1em;color:#fff;display:block;margin-bottom:.25rem;}
+.ar-role{font-size:.5rem;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:#b8922a;display:block;margin-bottom:1rem;}
+.ar-desc{font-size:.74rem;font-weight:300;line-height:1.9;color:rgba(255,255,255,.38);}
+.ar-coming{display:inline-block;margin-top:.8rem;font-size:.48rem;font-weight:700;letter-spacing:.25em;text-transform:uppercase;color:rgba(184,146,42,.5);border:1px solid rgba(184,146,42,.2);padding:4px 10px;}
+#music{background:#000;padding:100px 5%;}
+.music-inner{max-width:1400px;margin:0 auto;}
+.disc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:2.5rem;}
+.disc-card{background:#0f0f0f;border:1px solid rgba(255,255,255,.07);position:relative;overflow:hidden;transition:background .4s;display:flex;flex-direction:column;gap:.8rem;padding:1.5rem;}
+.disc-card:hover{background:#141414;}
+.disc-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:#b8922a;transform:scaleX(0);transform-origin:left;transition:transform .5s;}
+.disc-card:hover::after{transform:scaleX(1);}
+.disc-card iframe{width:100%;border:none;display:block;border-radius:4px;}
+.disc-type{font-size:.48rem;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:#b8922a;}
+.disc-title{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.08em;color:#fff;line-height:1.2;}
+.disc-artist{font-size:.55rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.32);}
+.disc-links{display:flex;gap:.5rem;margin-top:auto;padding-top:.7rem;border-top:1px solid rgba(255,255,255,.07);}
+.disc-link{font-size:.5rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;padding:5px 12px;border:1px solid rgba(184,146,42,.25);color:rgba(184,146,42,.7);text-decoration:none;transition:all .3s;}
+.disc-link:hover{background:#b8922a;color:#000;}
+.music-loading{text-align:center;padding:4rem;color:rgba(255,255,255,.3);font-size:.75rem;letter-spacing:.3em;text-transform:uppercase;}
+.music-empty{text-align:center;padding:4rem;color:rgba(255,255,255,.2);font-size:.75rem;letter-spacing:.3em;text-transform:uppercase;}
+#radio{background:#080808;padding:100px 5%;}
+.radio-inner{max-width:900px;}
+.radio-badge{display:inline-flex;align-items:center;gap:.6rem;padding:8px 16px;border:1px solid rgba(184,146,42,.3);margin-bottom:2rem;}
+.radio-dot{width:8px;height:8px;border-radius:50%;background:#b8922a;animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.radio-badge span{font-size:.5rem;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:#b8922a;}
+.radio-desc{font-size:.85rem;font-weight:300;line-height:2;color:rgba(255,255,255,.45);max-width:600px;margin-bottom:2.5rem;}
+.radio-platforms{display:flex;gap:1rem;flex-wrap:wrap;}
+.radio-platform{padding:12px 24px;border:1px solid rgba(255,255,255,.12);font-size:.55rem;font-weight:600;letter-spacing:.25em;text-transform:uppercase;color:rgba(255,255,255,.4);text-decoration:none;transition:all .3s;cursor:pointer;}
+.radio-platform:hover,.radio-platform.active{border-color:#b8922a;color:#b8922a;}
+#beats{background:#000;padding:100px 5%;}
+.beats-inner{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center;}
+.beats-text .s-ttl em{display:block;}
+.beats-desc{font-size:.82rem;font-weight:300;line-height:2;color:rgba(255,255,255,.45);margin-bottom:2.5rem;}
+.beats-cta{display:inline-block;padding:14px 32px;background:#b8922a;color:#000;font-family:'Bebas Neue',sans-serif;font-size:.85rem;letter-spacing:.3em;text-decoration:none;transition:background .3s;}
+.beats-cta:hover{background:#d4a93a;}
+.beats-visual{background:#0f0f0f;border:1px solid rgba(255,255,255,.07);padding:3rem;position:relative;}
+.beats-visual::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(184,146,42,.06),transparent 70%);}
+.beat-list{list-style:none;position:relative;z-index:1;}
+.beat-item{display:flex;align-items:center;justify-content:space-between;padding:1.2rem 0;border-bottom:1px solid rgba(255,255,255,.07);}
+.beat-item:last-child{border-bottom:none;}
+.beat-name{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:.1em;color:#fff;}
+.beat-tag{font-size:.45rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#b8922a;border:1px solid rgba(184,146,42,.25);padding:3px 8px;}
+#store{background:#080808;padding:100px 5%;}
+.store-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:3rem;}
+.store-card{position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.07);transition:border-color .3s;}
+.store-card:hover{border-color:rgba(184,146,42,.3);}
+.store-card-img{height:220px;display:flex;align-items:center;justify-content:center;font-size:4rem;background:#0f0f0f;position:relative;}
+.store-card-img::before{content:'';position:absolute;inset:0;opacity:.08;}
+.store-card:nth-child(1) .store-card-img::before{background:radial-gradient(circle,#b8922a,transparent);}
+.store-card:nth-child(2) .store-card-img::before{background:radial-gradient(circle,#2244cc,transparent);}
+.store-card:nth-child(3) .store-card-img::before{background:radial-gradient(circle,#22cc88,transparent);}
+.store-card-body{padding:1.8rem;}
+.store-card-title{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.1em;color:#fff;display:block;margin-bottom:.4rem;}
+.store-card-desc{font-size:.72rem;font-weight:300;line-height:1.9;color:rgba(255,255,255,.38);margin-bottom:1.4rem;}
+.store-card-btn{display:inline-block;font-size:.5rem;font-weight:700;letter-spacing:.25em;text-transform:uppercase;padding:8px 18px;border:1px solid rgba(184,146,42,.35);color:#b8922a;text-decoration:none;transition:all .3s;}
+.store-card-btn:hover{background:#b8922a;color:#000;}
+.store-coming{font-size:.48rem;font-weight:700;letter-spacing:.25em;text-transform:uppercase;color:rgba(255,255,255,.2);}
+#contact{display:grid;grid-template-columns:1fr 1fr;gap:0;padding:0;}
+.co-l{padding:100px 5%;border-right:1px solid rgba(255,255,255,.07);display:flex;flex-direction:column;justify-content:center;}
+.co-r{padding:100px 5% 100px 7%;}
+.co-body{font-size:.82rem;font-weight:300;line-height:2;color:rgba(255,255,255,.42);margin:1.8rem 0 2.5rem;}
+.co-links{display:flex;flex-direction:column;}
+.co-link{display:flex;justify-content:space-between;align-items:center;padding:1.2rem 0;border-bottom:1px solid rgba(255,255,255,.07);text-decoration:none;color:inherit;transition:padding-left .3s;}
+.co-link:first-child{border-top:1px solid rgba(255,255,255,.07);}
+.co-link:hover{padding-left:.5rem;}
+.co-link:hover .co-lbl{color:#fff;}
+.co-link:hover .co-arr{color:#b8922a;}
+.co-lbl{font-size:.58rem;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.38);transition:color .3s;}
+.co-arr{color:rgba(255,255,255,.2);font-size:1rem;transition:color .3s;}
+.form-wrap{border:1px solid rgba(255,255,255,.07);}
+.form{display:flex;flex-direction:column;}
+.f-row{display:grid;grid-template-columns:1fr 1fr;}
+.f-field{border-bottom:1px solid rgba(255,255,255,.07);border-right:1px solid rgba(255,255,255,.07);position:relative;}
+.f-field.full{grid-column:1/-1;border-right:none;}
+.f-field:nth-child(even):not(.full){border-right:none;}
+.f-field label{position:absolute;top:1.3rem;left:1.4rem;font-size:.5rem;font-weight:700;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.22);pointer-events:none;transition:color .3s;}
+.f-field:focus-within label{color:#b8922a;}
+.f-field:focus-within{background:rgba(255,255,255,.02);}
+.f-field input,.f-field textarea,.f-field select{width:100%;background:transparent;border:none;outline:none;padding:2.8rem 1.4rem 1.3rem;color:#fff;font-family:'Montserrat',sans-serif;font-size:.82rem;font-weight:300;-webkit-appearance:none;}
+.f-field textarea{resize:none;min-height:120px;}
+.f-field select option{background:#111;}
+.f-btn{font-family:'Bebas Neue',sans-serif;font-size:.9rem;letter-spacing:.4em;padding:1.6rem;background:#fff;color:#000;border:none;cursor:pointer;position:relative;overflow:hidden;}
+.f-btn::before{content:'';position:absolute;inset:0;background:#b8922a;transform:translateX(-101%);transition:transform .4s cubic-bezier(.16,1,.3,1);}
+.f-btn:hover::before{transform:translateX(0);}
+.f-btn span{position:relative;z-index:1;}
+footer{background:#000;border-top:1px solid rgba(255,255,255,.07);padding:32px 5%;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:2rem;}
+.f-logo{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:.3em;color:#fff;}
+.f-logo em{color:#b8922a;font-style:normal;}
+.f-copy{font-size:.5rem;font-weight:500;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.18);text-align:center;}
+.f-socs{display:flex;gap:.6rem;justify-content:flex-end;flex-wrap:wrap;}
+.f-soc{height:32px;padding:0 10px;border:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;font-size:.55rem;color:rgba(255,255,255,.28);text-decoration:none;font-weight:700;transition:all .3s;white-space:nowrap;}
+.f-soc:hover{border-color:#b8922a;color:#b8922a;}
+.rv{opacity:0;transform:translateY(25px);transition:opacity .9s ease,transform .9s ease;}
+.rv.on{opacity:1;transform:translateY(0);}
+
+/* ADMIN PANEL */
+#admin-panel{display:none;position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:100000;overflow-y:auto;padding:2rem;}
+#admin-panel.open{display:block;}
+.admin-wrap{max-width:900px;margin:0 auto;}
+.admin-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:1px solid rgba(255,255,255,.1);}
+.admin-title{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:.2em;color:#b8922a;}
+.admin-close{background:none;border:1px solid rgba(255,255,255,.2);color:#fff;padding:8px 16px;cursor:pointer;font-family:'Montserrat',sans-serif;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;transition:all .3s;}
+.admin-close:hover{background:#fff;color:#000;}
+.admin-login{background:#0f0f0f;border:1px solid rgba(255,255,255,.07);padding:3rem;max-width:400px;margin:5rem auto;}
+.admin-login h2{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:.2em;color:#fff;margin-bottom:2rem;}
+.admin-input{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#fff;padding:1rem 1.2rem;font-family:'Montserrat',sans-serif;font-size:.82rem;margin-bottom:1rem;outline:none;transition:border-color .3s;}
+.admin-input:focus{border-color:#b8922a;}
+.admin-btn{width:100%;padding:1rem;background:#b8922a;color:#000;border:none;font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:.3em;cursor:pointer;transition:background .3s;}
+.admin-btn:hover{background:#d4a93a;}
+.admin-btn.danger{background:rgba(192,23,10,.7);color:#fff;margin-top:.5rem;}
+.admin-btn.danger:hover{background:#c0170a;}
+.admin-err{color:#c0170a;font-size:.65rem;letter-spacing:.1em;margin-bottom:1rem;display:none;}
+.admin-section{margin-bottom:3rem;}
+.admin-section-title{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:.15em;color:#fff;margin-bottom:1.5rem;padding-bottom:.8rem;border-bottom:1px solid rgba(255,255,255,.07);}
+.admin-form{background:#0f0f0f;border:1px solid rgba(255,255,255,.07);padding:2rem;}
+.admin-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;}
+.admin-form-group{display:flex;flex-direction:column;gap:.4rem;}
+.admin-form-group.full{grid-column:1/-1;}
+.admin-label{font-size:.5rem;font-weight:700;letter-spacing:.25em;text-transform:uppercase;color:rgba(255,255,255,.4);}
+.admin-select{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#fff;padding:.8rem 1rem;font-family:'Montserrat',sans-serif;font-size:.78rem;outline:none;-webkit-appearance:none;transition:border-color .3s;}
+.admin-select:focus{border-color:#b8922a;}
+.admin-select option{background:#111;}
+.admin-add-btn{padding:.9rem 2rem;background:#b8922a;color:#000;border:none;font-family:'Bebas Neue',sans-serif;font-size:.85rem;letter-spacing:.3em;cursor:pointer;transition:background .3s;margin-top:1rem;}
+.admin-add-btn:hover{background:#d4a93a;}
+.admin-list{display:flex;flex-direction:column;gap:.8rem;margin-top:1.5rem;}
+.admin-item{background:#0f0f0f;border:1px solid rgba(255,255,255,.07);padding:1.2rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;}
+.admin-item-info{flex:1;}
+.admin-item-title{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:.1em;color:#fff;}
+.admin-item-meta{font-size:.5rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-top:.2rem;}
+.admin-delete{background:none;border:1px solid rgba(192,23,10,.3);color:rgba(192,23,10,.6);padding:5px 12px;cursor:pointer;font-size:.5rem;letter-spacing:.15em;text-transform:uppercase;font-family:'Montserrat',sans-serif;transition:all .3s;}
+.admin-delete:hover{background:#c0170a;color:#fff;border-color:#c0170a;}
+.admin-status{font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;padding:.5rem 1rem;margin-top:.8rem;display:none;}
+.admin-status.success{background:rgba(34,204,100,.1);color:#22cc64;border:1px solid rgba(34,204,100,.2);display:block;}
+.admin-status.error{background:rgba(192,23,10,.1);color:#c0170a;border:1px solid rgba(192,23,10,.2);display:block;}
+.admin-trigger{position:fixed;bottom:2rem;right:2rem;z-index:9997;background:rgba(184,146,42,.15);border:1px solid rgba(184,146,42,.3);color:#b8922a;padding:10px 18px;font-size:.5rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .3s;}
+.admin-trigger:hover{background:#b8922a;color:#000;}
+
+@media(max-width:1024px){
+  #about,#contact{grid-template-columns:1fr;}
+  .ab-l,.co-l{border-right:none;border-bottom:1px solid rgba(255,255,255,.07);}
+  .ar-grid{grid-template-columns:repeat(2,1fr);}
+  .ar-row-2{grid-template-columns:repeat(2,1fr);}
+  .disc-grid{grid-template-columns:repeat(2,1fr);}
+  .beats-inner{grid-template-columns:1fr;}
+  .store-grid{grid-template-columns:repeat(2,1fr);}
+  footer{grid-template-columns:1fr 1fr;}
+  .f-copy{display:none;}
+  .admin-form-grid{grid-template-columns:1fr;}
+}
+@media(max-width:640px){
+  .nav-links{display:none;}
+  .ar-grid{grid-template-columns:1fr;}
+  .ar-row-2{grid-template-columns:1fr;}
+  .disc-grid{grid-template-columns:1fr;}
+  .store-grid{grid-template-columns:1fr;}
+  .f-row{grid-template-columns:1fr;}
+  .f-field{border-right:none;}
+  footer{grid-template-columns:1fr;text-align:center;}
+  .f-socs{justify-content:center;}
+}
+</style>
+</head>
+<body>
+<div class="grain"></div>
+<div class="cur-dot" id="dot"></div>
+<div class="cur-ring" id="ring"></div>
+
+<nav>
+  <a href="#" class="nav-logo">R<em>.</em>A<em>.</em>H<em>.</em>U<em>.</em></a>
+  <ul class="nav-links">
+    <li><a href="#about">Mission</a></li>
+    <li><a href="#artists">Artists</a></li>
+    <li><a href="#music">Music</a></li>
+    <li><a href="#radio">Radio</a></li>
+    <li><a href="#beats">Beats</a></li>
+    <li><a href="#store">Store</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a href="#contact" class="nav-demo">Submit Demo</a>
+</nav>
+
+<div class="hero-wrap">
+  <div class="hero-overlay"></div>
+  <div class="hero-logo">
+    <span class="hero-label">R.A.H.U. RECORDS</span>
+    <span class="hero-sub">Respect &nbsp;&middot;&nbsp; Authenticity &nbsp;&middot;&nbsp; Honor &nbsp;&middot;&nbsp; Uniqueness</span>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="ab-l">
+    <span class="s-lbl rv">The Mission</span>
+    <h2 class="s-ttl rv">ONE HEAD.<br><em>Three</em><br>FACES.</h2>
+    <span class="s-rule rv"></span>
+    <p class="ab-body rv">R.A.H.U. Records is an independent ecosystem — music label, clothing brand, and holistic store — all rooted in one consciousness. We don't follow trends. We build them.</p>
+    <p class="ab-body rv">Every artist on this roster carries a frequency. Every release is a transmission. Every drop is intentional. This is not just music — this is a movement.</p>
+  </div>
+  <div class="ab-r">
+    <div class="ab-r-inner rv">
+      <p class="big-q">"Tell me what it is and I'll tell you what to do. Tell me what it do and I'll tell you what it is."<br><br><strong>— R.A.H.U. Records</strong></p>
+    </div>
+  </div>
+</section>
+
+<!-- ARTISTS -->
+<section id="artists">
+  <span class="s-lbl rv">The Roster</span>
+  <h2 class="s-ttl rv">THE <em>Artists</em></h2>
+  <span class="s-rule rv"></span>
+
+  <div class="ar-grid rv">
+    <div class="ar-card c-dj">
+      <div class="ar-bar"></div>
+      <div class="ar-icon-wrap"><span class="ar-num">01</span><span class="ar-icon">&#127911;</span></div>
+      <div class="ar-body">
+        <span class="ar-name">DJ AKAI</span>
+        <span class="ar-role">Producer &middot; DJ &middot; Beat Architect</span>
+        <p class="ar-desc">The sonic engine of R.A.H.U. Records. Fire-laced beats, cosmic frequencies, rhythms that move before the drop even lands.</p>
+        <a href="https://open.spotify.com/artist/2GhOecsJMDOZfPLOPCsynM" target="_blank" class="disc-link" style="display:inline-block;margin-top:.8rem;">Spotify</a>
+      </div>
+    </div>
+    <div class="ar-card c-rahu">
+      <div class="ar-bar"></div>
+      <div class="ar-icon-wrap"><span class="ar-num">02</span><span class="ar-icon">&#11088;</span></div>
+      <div class="ar-body">
+        <span class="ar-name">R.A.H.U.</span>
+        <span class="ar-role">Artist &middot; The Label Incarnate</span>
+        <p class="ar-desc">More than a name — R.A.H.U. is the philosophy made music. Conscious lyricism rooted in ancient wisdom, delivered with street precision.</p>
+        <a href="https://open.spotify.com/artist/3ISyELofc3YoQLGpq0Ag4R" target="_blank" class="disc-link" style="display:inline-block;margin-top:.8rem;">Spotify</a>
+      </div>
+    </div>
+    <div class="ar-card c-demi">
+      <div class="ar-bar"></div>
+      <div class="ar-icon-wrap"><span class="ar-num">03</span><span class="ar-icon">&#9889;</span></div>
+      <div class="ar-body">
+        <span class="ar-name">DemiG0D</span>
+        <span class="ar-role">Rapper &middot; Storyteller &middot; Force</span>
+        <p class="ar-desc">Between mortal and divine. DemiG0D walks the line where raw bars meet mythological energy — every verse a legend in the making.</p>
+        <span class="ar-coming">YouTube Coming Soon</span>
+      </div>
+    </div>
+    <div class="ar-card c-akz">
+      <div class="ar-bar"></div>
+      <div class="ar-icon-wrap"><span class="ar-num">04</span><span class="ar-icon">&#128251;</span></div>
+      <div class="ar-body">
+        <span class="ar-name">AKXION</span>
+        <span class="ar-role">Singer &middot; Songwriter &middot; Voice</span>
+        <p class="ar-desc">A voice that moves across genres like water. AKXION doesn't pick a lane — AKXION owns them all.</p>
+        <a href="https://open.spotify.com/artist/6A3xrKpZbpe6JSMcrBisEM" target="_blank" class="disc-link" style="display:inline-block;margin-top:.8rem;">Spotify</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="ar-row-2 rv" style="margin-top:0;">
+    <div class="ar-card c-bliss">
+      <div class="ar-bar"></div>
+      <div class="ar-icon-wrap"><span class="ar-num">05</span><span class="ar-icon">&#127768;</span></div>
+      <div class="ar-body">
+        <span class="ar-name">NOCTURNAL BLISS</span>
+        <span class="ar-role">Artist &middot; Night Sound &middot; Frequency</span>
+        <p class="ar-desc">After dark is where the real music lives. Nocturnal Bliss operates in the space between what you feel and what you can't explain.</p>
+        <a href="https://open.spotify.com/artist/0Jhr5Bw9S6hWELFxA40AlT" target="_blank" class="disc-link" style="display:inline-block;margin-top:.8rem;">Spotify</a>
+      </div>
+    </div>
+    <div class="ar-card c-lunita">
+      <div class="ar-bar"></div>
+      <div class="ar-icon-wrap"><span class="ar-num">06</span><span class="ar-icon">&#127769;</span></div>
+      <div class="ar-body">
+        <span class="ar-name">HOUSE OF LUNITA</span>
+        <span class="ar-role">Artist &middot; Moonlit Sound &middot; Mystic</span>
+        <p class="ar-desc">Where the moon meets the mic. House of Lunita brings sacred feminine energy into sound — ethereal, grounded, and unapologetically real.</p>
+        <a href="https://open.spotify.com/artist/1B3QnEThi3bM0W150HDxS2" target="_blank" class="disc-link" style="display:inline-block;margin-top:.8rem;">Spotify</a>
+      </div>
+    </div>
+    <div class="ar-card c-kash">
+      <div class="ar-bar"></div>
+      <div class="ar-icon-wrap"><span class="ar-num">07</span><span class="ar-icon">&#128142;</span></div>
+      <div class="ar-body">
+        <span class="ar-name">KA$H KANDII</span>
+        <span class="ar-role">Rapper &middot; Female Force &middot; Unfiltered</span>
+        <p class="ar-desc">Sweet on the surface. Ruthless on the bars. KA$H KANDII is the voice that makes heads turn and keeps them turning.</p>
+        <span class="ar-coming">Coming Soon</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MUSIC -->
+<section id="music">
+  <div class="music-inner">
+    <span class="s-lbl rv">Discography</span>
+    <h2 class="s-ttl rv">THE <em>Music</em></h2>
+    <span class="s-rule rv"></span>
+    <div class="disc-grid rv" id="music-grid">
+      <div class="music-loading">Loading music...</div>
+    </div>
+  </div>
+</section>
+
+<!-- RAHU RADIO -->
+<section id="radio">
+  <div class="radio-inner">
+    <span class="s-lbl rv">Live &middot; Streaming &middot; Frequencies</span>
+    <h2 class="s-ttl rv">RAHU <em>Radio</em></h2>
+    <span class="s-rule rv"></span>
+    <div class="radio-badge rv">
+      <div class="radio-dot"></div>
+      <span>Coming Soon &mdash; Broadcasting Live</span>
+    </div>
+    <p class="radio-desc rv">RAHU Radio is the heartbeat of the label — live sessions, unreleased tracks, artist takeovers, and frequencies you won't find anywhere else. One stream. All artists. No filters.</p>
+    <div class="radio-platforms rv">
+      <a class="radio-platform">YouTube Live</a>
+      <a class="radio-platform">Spotify</a>
+      <a class="radio-platform">Apple Music</a>
+      <a class="radio-platform">SoundCloud</a>
+    </div>
+  </div>
+</section>
+
+<!-- AKAI BEATS -->
+<section id="beats">
+  <div class="beats-inner">
+    <div class="beats-text">
+      <span class="s-lbl rv">For Artists &middot; For Creators</span>
+      <h2 class="s-ttl rv">AKAI <em>Beats</em></h2>
+      <span class="s-rule rv"></span>
+      <p class="beats-desc rv">Hand-crafted instrumentals built for artists who are serious about their sound. Trap, R&amp;B, orchestral, cinematic — every beat engineered to become someone's best song.</p>
+      <a href="mailto:rahu.records978@gmail.com" class="beats-cta rv">License A Beat</a>
+    </div>
+    <div class="beats-visual rv">
+      <ul class="beat-list">
+        <li class="beat-item"><span class="beat-name">Dark Matter</span><span class="beat-tag">Trap</span></li>
+        <li class="beat-item"><span class="beat-name">Sacred Ground</span><span class="beat-tag">R&amp;B</span></li>
+        <li class="beat-item"><span class="beat-name">Rahu Rising</span><span class="beat-tag">Cinematic</span></li>
+        <li class="beat-item"><span class="beat-name">Frequency 528</span><span class="beat-tag">Soul</span></li>
+        <li class="beat-item"><span class="beat-name">Keung Dynasty</span><span class="beat-tag">Hip Hop</span></li>
+        <li class="beat-item"><span class="beat-name">Shadow Work</span><span class="beat-tag">Drill</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- STORE -->
+<section id="store">
+  <span class="s-lbl rv">One Head &middot; Three Faces</span>
+  <h2 class="s-ttl rv">THE <em>Ecosystem</em></h2>
+  <span class="s-rule rv"></span>
+  <div class="store-grid rv">
+    <div class="store-card">
+      <div class="store-card-img">&#128248;</div>
+      <div class="store-card-body">
+        <span class="store-card-title">R.A.H.U. Records</span>
+        <p class="store-card-desc">The music. The artists. The movement. Stream, license, and support independent music that actually means something.</p>
+        <a href="#music" class="store-card-btn">Explore Music</a>
+      </div>
+    </div>
+    <div class="store-card">
+      <div class="store-card-img">&#128081;</div>
+      <div class="store-card-body">
+        <span class="store-card-title">KEUNGDOM</span>
+        <p class="store-card-desc">High-end luxury streetwear rooted in Cambodian heritage and consciousness culture. Wear your lineage. Wear your frequency.</p>
+        <span class="store-coming">&#8212; Coming Soon &#8212;</span>
+      </div>
+    </div>
+    <div class="store-card">
+      <div class="store-card-img">&#127807;</div>
+      <div class="store-card-body">
+        <span class="store-card-title">The Apothecary</span>
+        <p class="store-card-desc">Holistic products, medicinal herbs, consciousness tools, and longevity essentials. Everything you've been looking for in one place.</p>
+        <span class="store-coming">&#8212; Coming Soon &#8212;</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="co-l">
+    <span class="s-lbl rv">Get In Touch</span>
+    <h2 class="s-ttl rv">WORK <em>With</em><br>US.</h2>
+    <span class="s-rule rv"></span>
+    <p class="co-body rv">Artists, brands, promoters, press. If you move with intention and carry something real &mdash; the door is open.<br><br>
+    &#128231; <a href="mailto:rahu.records978@gmail.com" style="color:#b8922a;text-decoration:none;">rahu.records978@gmail.com</a><br>
+    &#128231; <a href="mailto:akai.ascension@gmail.com" style="color:#b8922a;text-decoration:none;">akai.ascension@gmail.com</a></p>
+    <div class="co-links rv">
+      <a href="https://www.instagram.com/r.a.h.u.records/" target="_blank" class="co-link"><span class="co-lbl">Instagram &mdash; @r.a.h.u.records</span><span class="co-arr">&rarr;</span></a>
+      <a href="https://open.spotify.com/artist/2GhOecsJMDOZfPLOPCsynM" target="_blank" class="co-link"><span class="co-lbl">Spotify &mdash; DJ AKAI</span><span class="co-arr">&rarr;</span></a>
+      <a href="https://open.spotify.com/artist/3ISyELofc3YoQLGpq0Ag4R" target="_blank" class="co-link"><span class="co-lbl">Spotify &mdash; R.A.H.U.</span><span class="co-arr">&rarr;</span></a>
+      <a href="https://music.apple.com/us/artist/dj-akai/584703375" target="_blank" class="co-link"><span class="co-lbl">Apple Music &mdash; DJ AKAI</span><span class="co-arr">&rarr;</span></a>
+      <a href="https://music.apple.com/us/artist/rahu/1046808341" target="_blank" class="co-link"><span class="co-lbl">Apple Music &mdash; R.A.H.U.</span><span class="co-arr">&rarr;</span></a>
+      <a href="https://www.youtube.com/@R.A.H.U.Records" target="_blank" class="co-link"><span class="co-lbl">YouTube &mdash; @R.A.H.U.Records</span><span class="co-arr">&rarr;</span></a>
+      <a href="https://www.facebook.com/R.A.H.U.Records" target="_blank" class="co-link"><span class="co-lbl">Facebook &mdash; R.A.H.U. Records</span><span class="co-arr">&rarr;</span></a>
+      <a href="mailto:akai.ascension@gmail.com" class="co-link"><span class="co-lbl">Artist Submissions</span><span class="co-arr">&rarr;</span></a>
+      <a href="mailto:rahu.records978@gmail.com" class="co-link"><span class="co-lbl">Booking &amp; Events</span><span class="co-arr">&rarr;</span></a>
+      <a href="https://discord.gg/B5ZfawY2J" target="_blank" class="co-link"><span class="co-lbl">Discord &mdash; Join KEUNGDOM Community</span><span class="co-arr">&rarr;</span></a>
+    </div>
+  </div>
+  <div class="co-r rv">
+    <div class="form-wrap">
+      <form class="form" action="https://formspree.io/f/xpqygjbb" method="POST">
+        <div class="f-row"><div class="f-field"><label>First Name</label><input type="text" name="first_name" required/></div><div class="f-field"><label>Last Name</label><input type="text" name="last_name" required/></div></div>
+        <div class="f-row"><div class="f-field full"><label>Email Address</label><input type="email" name="email" required/></div></div>
+        <div class="f-row"><div class="f-field full"><label>Inquiry Type</label><select name="inquiry_type"><option value="">Select...</option><option>Artist Submission</option><option>Brand Collaboration</option><option>Booking / Event</option><option>Press / Media</option><option>Beat License</option><option>KEUNGDOM Clothing</option><option>Holistic Store</option><option>General Inquiry</option></select></div></div>
+        <div class="f-row"><div class="f-field full"><label>Your Message</label><textarea name="message" required></textarea></div></div>
+        <button type="submit" class="f-btn"><span>SEND MESSAGE</span></button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="f-logo">R<em>.</em>A<em>.</em>H<em>.</em>U<em>.</em> Records</div>
+  <div class="f-copy">&copy; 2025 R.A.H.U. Records &middot; KEUNGDOM &middot; All Rights Reserved</div>
+  <div class="f-socs">
+    <a href="https://www.instagram.com/r.a.h.u.records/" target="_blank" class="f-soc">IG</a>
+    <a href="https://open.spotify.com/artist/2GhOecsJMDOZfPLOPCsynM" target="_blank" class="f-soc">SP1</a>
+    <a href="https://open.spotify.com/artist/3ISyELofc3YoQLGpq0Ag4R" target="_blank" class="f-soc">SP2</a>
+    <a href="https://music.apple.com/us/artist/dj-akai/584703375" target="_blank" class="f-soc">AM</a>
+    <a href="https://www.youtube.com/@R.A.H.U.Records" target="_blank" class="f-soc">YT</a>
+    <a href="https://www.facebook.com/R.A.H.U.Records" target="_blank" class="f-soc">FB</a>
+    <a href="https://discord.gg/B5ZfawY2J" target="_blank" class="f-soc">DC</a>
+  </div>
+</footer>
+
+<!-- ADMIN TRIGGER -->
+<button class="admin-trigger" onclick="openAdmin()">&#9881; Admin</button>
+
+<!-- ADMIN PANEL -->
+<div id="admin-panel">
+  <div class="admin-wrap">
+    <div class="admin-header">
+      <span class="admin-title">R.A.H.U. RECORDS — ADMIN</span>
+      <button class="admin-close" onclick="closeAdmin()">&#x2715; Close</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="admin-login-view">
+      <div class="admin-login">
+        <h2>Admin Access</h2>
+        <div class="admin-err" id="login-err">Incorrect password. Try again.</div>
+        <input class="admin-input" type="password" id="admin-pass" placeholder="Enter admin password" onkeydown="if(event.key==='Enter')adminLogin()"/>
+        <button class="admin-btn" onclick="adminLogin()">Enter</button>
+      </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="admin-dashboard" style="display:none;">
+
+      <div class="admin-section">
+        <div class="admin-section-title">Add New Music</div>
+        <div class="admin-form">
+          <div class="admin-form-grid">
+            <div class="admin-form-group">
+              <label class="admin-label">Title</label>
+              <input class="admin-input" type="text" id="m-title" placeholder="Song or Album title"/>
+            </div>
+            <div class="admin-form-group">
+              <label class="admin-label">Artist</label>
+              <select class="admin-select" id="m-artist">
+                <option value="DJ AKAI">DJ AKAI</option>
+                <option value="R.A.H.U.">R.A.H.U.</option>
+                <option value="DemiG0D">DemiG0D</option>
+                <option value="AKXION">AKXION</option>
+                <option value="NOCTURNAL BLISS">NOCTURNAL BLISS</option>
+                <option value="HOUSE OF LUNITA">HOUSE OF LUNITA</option>
+                <option value="KA$H KANDII">KA$H KANDII</option>
+              </select>
+            </div>
+            <div class="admin-form-group">
+              <label class="admin-label">Type</label>
+              <select class="admin-select" id="m-type">
+                <option value="Single">Single</option>
+                <option value="Album">Album</option>
+                <option value="EP">EP</option>
+                <option value="Beat">Beat</option>
+                <option value="Lo-Fi">Lo-Fi</option>
+                <option value="Jazz">Jazz</option>
+                <option value="Meditation">Meditation</option>
+                <option value="Instrumental">Instrumental</option>
+              </select>
+            </div>
+            <div class="admin-form-group">
+              <label class="admin-label">Spotify URL (full link)</label>
+              <input class="admin-input" type="text" id="m-spotify" placeholder="https://open.spotify.com/..."/>
+            </div>
+            <div class="admin-form-group full">
+              <label class="admin-label">Spotify Embed URL</label>
+              <input class="admin-input" type="text" id="m-embed" placeholder="https://open.spotify.com/embed/track/... or /album/..."/>
+            </div>
+          </div>
+          <button class="admin-add-btn" onclick="addMusic()">+ Add Music</button>
+          <div class="admin-status" id="music-status"></div>
+        </div>
+
+        <div class="admin-list" id="admin-music-list"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDkcSN8n57nUoh3CDWDkoidJx8R1u7Tx0A",
+  authDomain: "rahu-records.firebaseapp.com",
+  projectId: "rahu-records",
+  storageBucket: "rahu-records.firebasestorage.app",
+  messagingSenderId: "48384325273",
+  appId: "1:48384325273:web:c9bda7352e6e7277dcea08",
+  measurementId: "G-8M1YP76EE6"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// ADMIN PASSWORD — change this to whatever you want
+const ADMIN_PASSWORD = "rahu2025";
+
+window.openAdmin = () => { document.getElementById('admin-panel').classList.add('open'); }
+window.closeAdmin = () => { document.getElementById('admin-panel').classList.remove('open'); }
+
+window.adminLogin = () => {
+  const pass = document.getElementById('admin-pass').value;
+  if(pass === ADMIN_PASSWORD){
+    document.getElementById('admin-login-view').style.display = 'none';
+    document.getElementById('admin-dashboard').style.display = 'block';
+    loadAdminMusic();
+  } else {
+    document.getElementById('login-err').style.display = 'block';
+  }
+}
+
+// LOAD MUSIC ON PUBLIC SITE
+async function loadPublicMusic(){
+  const grid = document.getElementById('music-grid');
+  try {
+    const q = query(collection(db,'music'), orderBy('createdAt','desc'));
+    const snap = await getDocs(q);
+    if(snap.empty){
+      grid.innerHTML = '<div class="music-empty">Music coming soon.</div>';
+      return;
+    }
+    let html = '';
+    snap.forEach(d => {
+      const m = d.data();
+      html += `
+        <div class="disc-card">
+          <span class="disc-type">${m.type}</span>
+          <span class="disc-title">${m.title}</span>
+          <span class="disc-artist">${m.artist}</span>
+          ${m.embedUrl ? `<iframe src="${m.embedUrl}?utm_source=generator&theme=0" height="152" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>` : ''}
+          <div class="disc-links">
+            ${m.spotifyUrl ? `<a href="${m.spotifyUrl}" target="_blank" class="disc-link">Spotify</a>` : ''}
+          </div>
+        </div>`;
+    });
+    grid.innerHTML = html;
+  } catch(e){
+    grid.innerHTML = '<div class="music-empty">Music coming soon.</div>';
+  }
+}
+loadPublicMusic();
+
+// LOAD MUSIC IN ADMIN
+window.loadAdminMusic = async () => {
+  const list = document.getElementById('admin-music-list');
+  list.innerHTML = '';
+  try {
+    const q = query(collection(db,'music'), orderBy('createdAt','desc'));
+    const snap = await getDocs(q);
+    if(snap.empty){ list.innerHTML = '<p style="color:rgba(255,255,255,.3);font-size:.7rem;letter-spacing:.2em;">No music added yet.</p>'; return; }
+    snap.forEach(d => {
+      const m = d.data();
+      const el = document.createElement('div');
+      el.className = 'admin-item';
+      el.innerHTML = `
+        <div class="admin-item-info">
+          <div class="admin-item-title">${m.title}</div>
+          <div class="admin-item-meta">${m.artist} &middot; ${m.type}</div>
+        </div>
+        <button class="admin-delete" onclick="deleteMusic('${d.id}')">Delete</button>`;
+      list.appendChild(el);
+    });
+  } catch(e){ console.error(e); }
+}
+
+// ADD MUSIC
+window.addMusic = async () => {
+  const title = document.getElementById('m-title').value.trim();
+  const artist = document.getElementById('m-artist').value;
+  const type = document.getElementById('m-type').value;
+  const spotifyUrl = document.getElementById('m-spotify').value.trim();
+  const embedUrl = document.getElementById('m-embed').value.trim();
+  const status = document.getElementById('music-status');
+
+  if(!title || !embedUrl){ 
+    status.textContent = 'Title and Embed URL are required.';
+    status.className = 'admin-status error';
+    return; 
+  }
+  try {
+    await addDoc(collection(db,'music'), { title, artist, type, spotifyUrl, embedUrl, createdAt: Date.now() });
+    status.textContent = '✓ Music added successfully!';
+    status.className = 'admin-status success';
+    document.getElementById('m-title').value = '';
+    document.getElementById('m-spotify').value = '';
+    document.getElementById('m-embed').value = '';
+    loadAdminMusic();
+    loadPublicMusic();
+    setTimeout(()=>{ status.className='admin-status'; }, 3000);
+  } catch(e){
+    status.textContent = 'Error adding music. Try again.';
+    status.className = 'admin-status error';
+  }
+}
+
+// DELETE MUSIC
+window.deleteMusic = async (id) => {
+  if(!confirm('Delete this track?')) return;
+  try {
+    await deleteDoc(doc(db,'music',id));
+    loadAdminMusic();
+    loadPublicMusic();
+  } catch(e){ alert('Error deleting.'); }
+}
+</script>
+
+<script>
+const dot=document.getElementById('dot'),ring=document.getElementById('ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
+(function loop(){dot.style.left=mx+'px';dot.style.top=my+'px';rx+=(mx-rx)*.1;ry+=(my-ry)*.1;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(loop);})();
+document.querySelectorAll('a,button,.ar-card,.disc-card,.store-card').forEach(el=>{
+  el.addEventListener('mouseenter',()=>ring.classList.add('hov'));
+  el.addEventListener('mouseleave',()=>ring.classList.remove('hov'));
+});
+const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('on');});},{threshold:.1});
+document.querySelectorAll('.rv').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>
