@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Custom Song Order | R.A.H.U. Records</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --black:#0a0908;
+      --black-2:#141210;
+      --gold:#c9a227;
+      --gold-bright:#e8c96a;
+      --maroon:#6e1f2a;
+      --bone:#ece4d3;
+      --muted:#b9aa8b;
+      --line:rgba(201,162,39,.25);
+      --glass:rgba(255,255,255,.06);
+      --shadow:0 24px 80px rgba(0,0,0,.45);
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:'Jost',sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(201,162,39,.16), transparent 35%),
+        radial-gradient(circle at 80% 20%, rgba(110,31,42,.28), transparent 34%),
+        linear-gradient(135deg,#050505,#141210 55%,#070606);
+      color:var(--bone);
+      min-height:100vh;
+    }
+    a{color:inherit;text-decoration:none}
+    .wrap{width:min(1180px,92vw);margin:0 auto}
+    header{
+      position:sticky;top:0;z-index:20;
+      backdrop-filter:blur(18px);
+      background:rgba(10,9,8,.76);
+      border-bottom:1px solid var(--line);
+    }
+    .nav{display:flex;align-items:center;justify-content:space-between;padding:18px 0}
+    .brand{display:flex;gap:12px;align-items:center;font-weight:700;letter-spacing:.18em;text-transform:uppercase}
+    .brand-mark{width:38px;height:38px;border:1px solid var(--gold);border-radius:50%;display:grid;place-items:center;color:var(--gold-bright);box-shadow:0 0 26px rgba(201,162,39,.25)}
+    .nav-links{display:flex;gap:18px;align-items:center;color:var(--muted);font-size:.92rem}
+    .btn{border:1px solid var(--gold);background:linear-gradient(135deg,var(--gold),var(--gold-bright));color:#110e08;padding:12px 18px;border-radius:999px;font-weight:700;cursor:pointer;transition:.25s;box-shadow:0 12px 32px rgba(201,162,39,.18)}
+    .btn:hover{transform:translateY(-2px);box-shadow:0 16px 40px rgba(201,162,39,.28)}
+    .btn.secondary{background:transparent;color:var(--gold-bright);box-shadow:none}
+    .hero{padding:82px 0 46px;text-align:center;position:relative;overflow:hidden}
+    .eyebrow{color:var(--gold-bright);letter-spacing:.26em;text-transform:uppercase;font-size:.82rem;font-weight:700}
+    h1{font-family:'Cormorant Garamond',serif;font-size:clamp(3rem,7vw,6.7rem);line-height:.9;margin:16px 0 20px;color:#fff;text-shadow:0 0 35px rgba(201,162,39,.16)}
+    .hero p{max-width:780px;margin:0 auto 28px;color:#d5cab4;font-size:1.1rem;line-height:1.7}
+    .hero-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+    .studio-grid{display:grid;grid-template-columns:1.4fr .8fr;gap:26px;align-items:start;padding:28px 0 80px}
+    .panel{background:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.035));border:1px solid var(--line);border-radius:28px;box-shadow:var(--shadow);overflow:hidden}
+    .panel-head{padding:26px 28px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:20px;align-items:center}
+    .panel-head h2{font-family:'Cormorant Garamond',serif;font-size:2.1rem;margin:0;color:#fff}
+    .progress{height:8px;background:rgba(255,255,255,.08);border-radius:999px;overflow:hidden;min-width:180px}
+    .progress span{display:block;height:100%;width:20%;background:linear-gradient(90deg,var(--gold),var(--gold-bright));border-radius:999px;transition:.3s}
+    form{padding:28px}
+    .step{display:none;animation:rise .35s ease}
+    .step.active{display:block}
+    @keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+    .step-label{color:var(--gold-bright);font-weight:700;letter-spacing:.16em;text-transform:uppercase;font-size:.82rem;margin-bottom:8px}
+    .step h3{font-family:'Cormorant Garamond',serif;font-size:2rem;margin:0 0 8px;color:#fff}
+    .hint{color:#cbbfaa;margin:0 0 24px;line-height:1.55}
+    .cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    .choice{position:relative}
+    .choice input{position:absolute;opacity:0;pointer-events:none}
+    .choice span{display:block;padding:17px 16px;border:1px solid rgba(236,228,211,.16);border-radius:18px;background:rgba(0,0,0,.22);color:#eee;cursor:pointer;transition:.22s;min-height:72px}
+    .choice b{display:block;color:#fff;margin-bottom:4px}
+    .choice small{color:#b8ad97}
+    .choice input:checked + span{border-color:var(--gold-bright);background:linear-gradient(135deg,rgba(201,162,39,.2),rgba(110,31,42,.18));box-shadow:0 0 0 1px rgba(232,201,106,.22),0 14px 34px rgba(0,0,0,.25)}
+    .fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+    label.field{display:block}
+    .field span{display:block;margin:0 0 8px;color:var(--gold-bright);font-weight:600}
+    input,select,textarea{width:100%;border:1px solid rgba(236,228,211,.18);background:rgba(0,0,0,.24);color:#fff;border-radius:16px;padding:14px 15px;font:inherit;outline:none}
+    textarea{min-height:145px;resize:vertical;line-height:1.55}
+    input:focus,select:focus,textarea:focus{border-color:var(--gold-bright);box-shadow:0 0 0 3px rgba(201,162,39,.13)}
+    .full{grid-column:1/-1}
+    .checks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:12px}
+    .check{display:flex;gap:10px;align-items:center;border:1px solid rgba(236,228,211,.14);border-radius:16px;padding:13px;background:rgba(0,0,0,.2);color:#ddd}
+    .check input{width:auto;accent-color:var(--gold)}
+    .form-actions{display:flex;justify-content:space-between;gap:12px;margin-top:28px;border-top:1px solid var(--line);padding-top:22px}
+    .summary{position:sticky;top:92px;padding:24px}
+    .summary h3{font-family:'Cormorant Garamond',serif;font-size:2rem;margin:0 0 6px;color:#fff}
+    .summary p{margin:0 0 22px;color:#cbbfaa;line-height:1.5}
+    .summary-list{display:grid;gap:12px}
+    .summary-item{border:1px solid rgba(236,228,211,.13);border-radius:16px;padding:14px;background:rgba(0,0,0,.22)}
+    .summary-item small{display:block;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;font-size:.68rem;margin-bottom:4px}
+    .summary-item strong{color:#fff;font-weight:600}
+    .notice{margin-top:18px;padding:14px;border-radius:16px;border:1px solid rgba(201,162,39,.28);background:rgba(201,162,39,.08);color:#dccfac;line-height:1.55;font-size:.93rem}
+    footer{border-top:1px solid var(--line);padding:28px 0;color:#8f856f;text-align:center}
+    @media(max-width:900px){.studio-grid{grid-template-columns:1fr}.summary{position:relative;top:auto}.nav-links{display:none}.panel-head{display:block}.progress{margin-top:18px}.cards,.fields,.checks{grid-template-columns:1fr}.hero{text-align:left}.hero-actions{justify-content:flex-start}h1{font-size:3.4rem}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap nav">
+      <a class="brand" href="#"><span class="brand-mark">R</span><span>R.A.H.U. Records</span></a>
+      <nav class="nav-links">
+        <a href="#order">Custom Song</a>
+        <a href="#contact">Submit Request</a>
+        <a class="btn secondary" href="mailto:rahurecords978@yahoo.com">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero wrap">
+      <div class="eyebrow">Custom Music Commission</div>
+      <h1>Create Your Song</h1>
+      <p>Turn your story, dedication, poem, memory, or message into a custom song produced by R.A.H.U. Records. Choose the sound, choose the voice, tell the story, and submit your request.</p>
+      <div class="hero-actions">
+        <a class="btn" href="#order">Start Your Request</a>
+        <a class="btn secondary" href="mailto:rahurecords978@yahoo.com">Ask a Question</a>
+      </div>
+    </section>
+
+    <section id="order" class="wrap studio-grid">
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <div class="eyebrow">Order Builder</div>
+            <h2>Custom Song Request</h2>
+          </div>
+          <div class="progress"><span id="progressBar"></span></div>
+        </div>
+
+        <form id="songForm" action="mailto:rahurecords978@yahoo.com" method="post" enctype="text/plain">
+          <div class="step active" data-step="1">
+            <div class="step-label">Step 1 of 5</div>
+            <h3>Choose the music style</h3>
+            <p class="hint">Pick the main direction. You can add extra details later.</p>
+            <div class="cards" data-group="genre">
+              <label class="choice"><input name="Music Style" type="radio" value="Korean OST" checked><span><b>Korean OST</b><small>Cinematic, emotional, polished</small></span></label>
+              <label class="choice"><input name="Music Style" type="radio" value="Pop / R&B"><span><b>Pop / R&B</b><small>Smooth, catchy, radio-ready</small></span></label>
+              <label class="choice"><input name="Music Style" type="radio" value="Trap"><span><b>Trap</b><small>808s, bounce, modern energy</small></span></label>
+              <label class="choice"><input name="Music Style" type="radio" value="Hip Hop"><span><b>Hip Hop</b><small>Rap, storytelling, rhythm</small></span></label>
+              <label class="choice"><input name="Music Style" type="radio" value="Country"><span><b>Country</b><small>Southern, heartfelt, grounded</small></span></label>
+              <label class="choice"><input name="Music Style" type="radio" value="Rock"><span><b>Rock</b><small>Guitar-driven, powerful</small></span></label>
+              <label class="choice"><input name="Music Style" type="radio" value="EDM"><span><b>EDM</b><small>Festival, dance, big drop</small></span></label>
+              <label class="choice"><input name="Music Style" type="radio" value="Latin Blues"><span><b>Latin Blues</b><small>Soulful, warm, smooth</small></span></label>
+              <label class="choice"><input name="Music Style" type="radio" value="Meditation"><span><b>Meditation</b><small>Soft, spiritual, atmospheric</small></span></label>
+              <label class="choice"><input name="Music Style" type="radio" value="Custom"><span><b>Custom</b><small>Describe your own style</small></span></label>
+            </div>
+          </div>
+
+          <div class="step" data-step="2">
+            <div class="step-label">Step 2 of 5</div>
+            <h3>Choose the vocal style</h3>
+            <p class="hint">Select the voice direction for the final song.</p>
+            <div class="cards" data-group="vocal">
+              <label class="choice"><input name="Vocal Style" type="radio" value="Male R&B" checked><span><b>Male R&B</b><small>Smooth, emotional, polished</small></span></label>
+              <label class="choice"><input name="Vocal Style" type="radio" value="Female Pop"><span><b>Female Pop</b><small>Bright, clean, catchy</small></span></label>
+              <label class="choice"><input name="Vocal Style" type="radio" value="Male Rap"><span><b>Male Rap</b><small>Confident, rhythmic, direct</small></span></label>
+              <label class="choice"><input name="Vocal Style" type="radio" value="Female Rap"><span><b>Female Rap</b><small>Stylish, sharp, modern</small></span></label>
+              <label class="choice"><input name="Vocal Style" type="radio" value="Country Male"><span><b>Country Male</b><small>Deep, southern, heartfelt</small></span></label>
+              <label class="choice"><input name="Vocal Style" type="radio" value="Rock Male"><span><b>Rock Male</b><small>Gritty, strong, dramatic</small></span></label>
+              <label class="choice"><input name="Vocal Style" type="radio" value="Soft OST Vocal"><span><b>Soft OST Vocal</b><small>Gentle, cinematic, emotional</small></span></label>
+              <label class="choice"><input name="Vocal Style" type="radio" value="Island / Patois"><span><b>Island / Patois</b><small>Groovy, melodic, global</small></span></label>
+              <label class="choice"><input name="Vocal Style" type="radio" value="80s R&B Male"><span><b>80s R&B Male</b><small>Classic, romantic, soulful</small></span></label>
+              <label class="choice"><input name="Vocal Style" type="radio" value="Surprise Me"><span><b>Surprise Me</b><small>Let R.A.H.U. choose</small></span></label>
+            </div>
+          </div>
+
+          <div class="step" data-step="3">
+            <div class="step-label">Step 3 of 5</div>
+            <h3>Tell the story</h3>
+            <p class="hint">Share what the song is about. More detail helps create a better song.</p>
+            <div class="fields">
+              <label class="field"><span>Song title</span><input name="Song Title" placeholder="Optional"></label>
+              <label class="field"><span>Occasion</span><select name="Occasion"><option>Birthday</option><option>Wedding</option><option>Anniversary</option><option>Love Song</option><option>Memorial</option><option>Motivation</option><option>Business / Brand</option><option>Spiritual</option><option>Other</option></select></label>
+              <label class="field"><span>Mood</span><select name="Mood"><option>Emotional</option><option>Romantic</option><option>Inspirational</option><option>Luxury</option><option>Dark / Mystic</option><option>Happy</option><option>Sad</option><option>Confident</option><option>Peaceful</option></select></label>
+              <label class="field"><span>Names to include</span><input name="Names to Include" placeholder="Names, nicknames, places"></label>
+              <label class="field full"><span>What should the song be about?</span><textarea name="Song Story" placeholder="Tell the story, memory, message, dedication, or idea..."></textarea></label>
+            </div>
+          </div>
+
+          <div class="step" data-step="4">
+            <div class="step-label">Step 4 of 5</div>
+            <h3>Add lyrics or extras</h3>
+            <p class="hint">Paste lyrics, poetry, lines, or notes. Leave blank if you want R.A.H.U. Records to write it.</p>
+            <div class="fields">
+              <label class="field full"><span>Lyrics / poem / notes</span><textarea name="Lyrics or Notes" placeholder="Paste lyrics, poetry, special words, or lines you want included..."></textarea></label>
+            </div>
+            <div class="checks">
+              <label class="check"><input type="checkbox" name="Extras" value="Cover Art"> Cover Art</label>
+              <label class="check"><input type="checkbox" name="Extras" value="Instrumental"> Instrumental</label>
+              <label class="check"><input type="checkbox" name="Extras" value="Karaoke Version"> Karaoke Version</label>
+              <label class="check"><input type="checkbox" name="Extras" value="Lyrics Video"> Lyrics Video</label>
+              <label class="check"><input type="checkbox" name="Extras" value="Commercial License"> Commercial License</label>
+              <label class="check"><input type="checkbox" name="Extras" value="Explicit Version"> Explicit Version</label>
+            </div>
+          </div>
+
+          <div class="step" data-step="5" id="contact">
+            <div class="step-label">Step 5 of 5</div>
+            <h3>Contact & submit</h3>
+            <p class="hint">Your request will open your email app addressed to R.A.H.U. Records.</p>
+            <div class="fields">
+              <label class="field"><span>Your name</span><input name="Customer Name" required placeholder="Full name"></label>
+              <label class="field"><span>Email</span><input name="Customer Email" type="email" required placeholder="you@example.com"></label>
+              <label class="field"><span>Phone / social</span><input name="Phone or Social" placeholder="Optional"></label>
+              <label class="field"><span>Preferred delivery</span><select name="Preferred Delivery"><option>Standard</option><option>Rush</option><option>No deadline</option></select></label>
+              <label class="field full"><span>Final message</span><textarea name="Final Message" placeholder="Anything else R.A.H.U. Records should know?"></textarea></label>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn secondary" id="prevBtn">Back</button>
+            <button type="button" class="btn" id="nextBtn">Next</button>
+            <button type="submit" class="btn" id="submitBtn" style="display:none">Submit Request</button>
+          </div>
+        </form>
+      </div>
+
+      <aside class="panel summary">
+        <div class="eyebrow">Live Summary</div>
+        <h3>Your Song Blueprint</h3>
+        <p>This updates while the customer builds the request.</p>
+        <div class="summary-list">
+          <div class="summary-item"><small>Genre</small><strong id="sumGenre">Korean OST</strong></div>
+          <div class="summary-item"><small>Vocal</small><strong id="sumVocal">Male R&B</strong></div>
+          <div class="summary-item"><small>Occasion</small><strong id="sumOccasion">Birthday</strong></div>
+          <div class="summary-item"><small>Mood</small><strong id="sumMood">Emotional</strong></div>
+          <div class="summary-item"><small>Title</small><strong id="sumTitle">Untitled Custom Song</strong></div>
+        </div>
+        <div class="notice">Note: this version uses email submission. Later, this can be connected to Netlify Forms, Google Forms, Stripe, or a full order dashboard.</div>
+      </aside>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">R.A.H.U. Records | Custom Music Commissions | Founded by ARANYA KEUNG</div>
+  </footer>
+
+  <script>
+    const steps=[...document.querySelectorAll('.step')];
+    const progress=document.getElementById('progressBar');
+    const prevBtn=document.getElementById('prevBtn');
+    const nextBtn=document.getElementById('nextBtn');
+    const submitBtn=document.getElementById('submitBtn');
+    let current=0;
+    function showStep(){
+      steps.forEach((s,i)=>s.classList.toggle('active',i===current));
+      progress.style.width=((current+1)/steps.length*100)+'%';
+      prevBtn.style.visibility=current===0?'hidden':'visible';
+      nextBtn.style.display=current===steps.length-1?'none':'inline-block';
+      submitBtn.style.display=current===steps.length-1?'inline-block':'none';
+      window.scrollTo({top:document.getElementById('order').offsetTop-70,behavior:'smooth'});
+    }
+    nextBtn.addEventListener('click',()=>{if(current<steps.length-1){current++;showStep();}});
+    prevBtn.addEventListener('click',()=>{if(current>0){current--;showStep();}});
+    function val(name){const el=document.querySelector(`[name="${name}"]:checked`)||document.querySelector(`[name="${name}"]`);return el&&el.value?el.value:''}
+    function updateSummary(){
+      document.getElementById('sumGenre').textContent=val('Music Style')||'Not selected';
+      document.getElementById('sumVocal').textContent=val('Vocal Style')||'Not selected';
+      document.getElementById('sumOccasion').textContent=document.querySelector('[name="Occasion"]').value;
+      document.getElementById('sumMood').textContent=document.querySelector('[name="Mood"]').value;
+      const title=document.querySelector('[name="Song Title"]').value.trim();
+      document.getElementById('sumTitle').textContent=title||'Untitled Custom Song';
+    }
+    document.querySelectorAll('input,select,textarea').forEach(el=>el.addEventListener('input',updateSummary));
+    document.querySelectorAll('input,select,textarea').forEach(el=>el.addEventListener('change',updateSummary));
+    showStep();updateSummary();
+  </script>
+</body>
+</html>
