@@ -10,7 +10,7 @@ const webhookKey=defineSecret("STRIPE_WEBHOOK_SECRET");
 const app=express();
 const prices={single:9900,five:39599,ten:69995};
 const origin=process.env.PUBLIC_SITE_ORIGIN;
-app.post("/checkout",express.json(),async(req,res)=>{
+app.post("/api/checkout",express.json(),async(req,res)=>{
  try {
   if(!origin) return res.status(503).json({error:"Checkout is not configured"});
   const packageId=String(req.body?.packageId||"");
@@ -24,7 +24,7 @@ app.post("/checkout",express.json(),async(req,res)=>{
   res.json({url:session.url});
  }catch(e){console.error(e);res.status(500).json({error:"Checkout unavailable"});}
 });
-app.post("/free-demo",express.json(),async(req,res)=>{
+app.post("/api/free-demo",express.json(),async(req,res)=>{
  try {
   const auth=req.get("Authorization")||"";
   const token=auth.startsWith("Bearer ")?auth.slice(7):"";
@@ -36,7 +36,7 @@ app.post("/free-demo",express.json(),async(req,res)=>{
   res.status(201).json({requestId:ref.id,amountCents:0,status:"confirmed"});
  }catch(e){res.status(401).json({error:"Authentication failed"});}
 });
-app.post("/stripe-webhook",express.raw({type:"application/json"}),async(req,res)=>{
+app.post("/api/stripe-webhook",express.raw({type:"application/json"}),async(req,res)=>{
  try {
   const stripe=new Stripe(stripeKey.value());
   const event=stripe.webhooks.constructEvent(req.body,req.get("stripe-signature"),webhookKey.value());
@@ -49,7 +49,7 @@ app.post("/stripe-webhook",express.raw({type:"application/json"}),async(req,res)
 });
 
 // Administrator-only artist approval and server-side role assignment.
-app.post("/approve-artist",express.json(),async(req,res)=>{
+app.post("/api/approve-artist",express.json(),async(req,res)=>{
  try{
   const header=req.get("Authorization")||"";
   if(!header.startsWith("Bearer "))return res.status(401).json({error:"Authentication required"});
