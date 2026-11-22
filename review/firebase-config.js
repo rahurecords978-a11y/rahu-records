@@ -1,7 +1,10 @@
-// Fill with the NEW Firebase project's public web configuration before deployment.
-// These values identify a Firebase app; they are not server secrets.
+// Public Firebase web configuration for THE NEW SEASON.
 export const firebaseConfig = {
- apiKey: "", authDomain: "", projectId: "", storageBucket: "",
- messagingSenderId: "", appId: ""
+ apiKey: "AIzaSyBdTayrwY2OwxsBb_yLiLlKacBlr9Z_dHY",
+ authDomain: "rahu-records-website.firebaseapp.com",
+ projectId: "rahu-records-website",
+ storageBucket: "rahu-records-website.firebasestorage.app",
+ messagingSenderId: "980992306715",
+ appId: "1:980992306715:web:b8e7ffbe690aeafd4352be"
 };
 export const apiBase = "/api";
