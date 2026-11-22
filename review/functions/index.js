@@ -30,7 +30,7 @@ app.post("/api/free-demo",express.json(),async(req,res)=>{
   const auth=req.get("Authorization")||"";
   const token=auth.startsWith("Bearer ")?auth.slice(7):"";
   if(!token) return res.status(401).json({error:"Sign in required"});
-  const decoded=await admin.auth().verifyIdToken(token);
+  const decoded=await admin.auth().verifyIdToken(token,true);
   const story=String(req.body?.story||"").trim();
   if(story.length<10||story.length>4000)return res.status(400).json({error:"Story must be 10–4000 characters"});
   const ref=await admin.firestore().collection("demoRequests").add({customerUid:decoded.uid,story,status:"requested",amountCents:0,createdAt:admin.firestore.FieldValue.serverTimestamp()});
@@ -43,7 +43,8 @@ app.post("/api/stripe-webhook",express.raw({type:"application/json"}),async(req,
   const event=stripe.webhooks.constructEvent(req.rawBody||req.body,req.get("stripe-signature"),webhookKey.value());
   if(event.type==="checkout.session.completed"||event.type==="checkout.session.async_payment_succeeded"||event.type==="checkout.session.async_payment_failed"){
    const s=event.data.object;
-   await admin.firestore().collection("orders").doc(s.id).set({packageId:s.metadata?.packageId,amountCents:s.amount_total,paymentStatus:s.payment_status,checkoutEvent:event.type,customerEmail:s.customer_details?.email||null,createdAt:admin.firestore.FieldValue.serverTimestamp()},{merge:true});
+   const paid=s.payment_status==="paid";
+   await admin.firestore().collection("orders").doc(s.id).set({packageId:s.metadata?.packageId,amountCents:s.amount_total,paymentStatus:s.payment_status,fulfillmentStatus:paid?"ready_for_review":"awaiting_payment",checkoutEvent:event.type,customerEmail:s.customer_details?.email||null,updatedAt:admin.firestore.FieldValue.serverTimestamp()},{merge:true});
   }
   if(event.type==="charge.refunded"){const charge=event.data.object;await admin.firestore().collection("stripeEvents").doc(event.id).set({type:event.type,chargeId:charge.id,refunded:charge.amount_refunded,createdAt:admin.firestore.FieldValue.serverTimestamp()});}
   res.json({received:true});
@@ -59,7 +60,7 @@ app.post("/api/create-invoice",express.json(),async(req,res)=>{
   const caller=await admin.auth().verifyIdToken(bearer.slice(7),true);
   if(caller.admin!==true)return res.status(403).json({error:"Administrator required"});
   const email=String(req.body?.customerEmail||"").trim(),packageId=String(req.body?.packageId||"");
-  if(!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)||!Object.hasOwn(invoicePrices,packageId))return res.status(400).json({error:"Invalid invoice details"});
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)||!Object.hasOwn(invoicePrices,packageId))return res.status(400).json({error:"Invalid invoice details"});
   const stripe=new Stripe(stripeKey.value());
   const customers=await stripe.customers.list({email,limit:1});
   const customer=customers.data[0]||await stripe.customers.create({email});
