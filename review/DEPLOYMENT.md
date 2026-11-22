@@ -9,11 +9,14 @@ This branch is NOT production-ready. It intentionally does not publish to the li
 6. Verify assets, song rights, product inventory, and accessibility. Do not expose Creator Studio as a public link.
 7. Review and explicitly approve before any production deployment.
 
-## Stripe test account audit (2026-11-22)
-- Stripe connection: R.A.H.U. RECORDS sandbox only.
-- Stripe Tax settings: pending, missing head_office; no test registrations.
-- Keep automatic_tax disabled until verified business address, product tax codes, applicable tax registrations, and tax-inclusive/exclusive price policy are confirmed.
+## Stripe payments and invoicing scope
+- Stripe Checkout: one-time SPICA package payments only.
+- Stripe Invoicing: administrator-created draft invoices for review.
+- Stripe Tax is OUT OF SCOPE and is not configured or enabled by this application.
+- No automatic tax calculation or tax registration workflow is included.
 - Checkout: test hosted Checkout with server-defined amounts; no production payment attempt has been made.
-- Invoicing: POST /api/create-invoice requires verified admin Firebase claim and creates DRAFT invoices only. Review before finalizing or sending. Never create invoices from untrusted browser totals.
-- Webhook: verify signatures against raw body, test checkout.session.completed, asynchronous payment events and refunds; use Stripe event IDs for idempotency and reconcile payment state before fulfillment.
+- Invoicing: POST /api/create-invoice requires verified admin Firebase claim and creates DRAFT invoices only. Review before finalizing or sending.
+- Webhooks: verify signatures and reconcile payment outcomes before fulfillment.
 - Never place Stripe secret keys in browser code or GitHub. Use Firebase Secret Manager.
+
+Excluding Stripe Tax from the application does not remove any applicable legal tax obligations. Review obligations separately before selling.
