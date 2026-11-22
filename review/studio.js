@@ -1,7 +1,7 @@
 import {initializeApp} from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
 import {getAuth,onAuthStateChanged,signInWithEmailAndPassword} from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 import {getFirestore,collection,query,where,getDocs,doc,updateDoc} from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
-import {firebaseConfig} from "./firebase-config.js";
+import {firebaseConfig,apiBase} from "./firebase-config.js";
 const el=id=>document.getElementById(id),status=msg=>el("status").textContent=msg;
 if(!firebaseConfig.apiKey)status("Studio awaiting Firebase configuration.");
 else{
@@ -18,7 +18,7 @@ else{
    const root=el(name);root.replaceChildren();
    const docs=await getDocs(query(collection(db,name),where(field,"==",false)));
    docs.forEach(s=>{const d=s.data(),article=document.createElement("article"),title=document.createElement("strong"),button=document.createElement("button");title.textContent=d.displayName||d.title||s.id;button.textContent=name==="artists"?"Approve artist profile":"Publish release";
-    button.onclick=async()=>{try{await updateDoc(doc(db,name,s.id),{[field]:true});status("Updated. Artist upload permission requires a separate trusted custom-claim assignment.");await load()}catch(e){status(e.message)}};
+    button.onclick=async()=>{try{if(name==="artists"){const token=await auth.currentUser.getIdToken();const response=await fetch(apiBase+"/approve-artist",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+token},body:JSON.stringify({uid:s.id})});if(!response.ok)throw Error((await response.json()).error||"Approval failed");}else{await updateDoc(doc(db,name,s.id),{[field]:true});}status("Updated.");await load()}catch(e){status(e.message)}};
     article.append(title,button);root.append(article);
    });
   }
