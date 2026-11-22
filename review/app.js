@@ -4,7 +4,7 @@ import {getFirestore,collection,query,where,getDocs} from "https://www.gstatic.c
 import {firebaseConfig,apiBase} from "./firebase-config.js";
 const el=id=>document.getElementById(id);
 const ready=!!firebaseConfig.apiKey&&!!firebaseConfig.projectId;
-if(!ready){if(el("authStatus"))el("authStatus").textContent="Account services will activate after Firebase configuration.";if(el("checkoutStatus"))el("checkoutStatus").textContent="Checkout is not yet configured.";}
+if(!ready){if(el("authStatus"))el("authStatus").textContent="Account services will activate after Firebase configuration.";}
 if(ready){
  const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
  const status=msg=>{if(el("authStatus"))el("authStatus").textContent=msg;};
@@ -29,13 +29,14 @@ if(ready){
   }catch(e){console.warn("Catalog unavailable",e);}
  }
 }
-el("checkoutButton")?.addEventListener("click",async()=>{
- const status=el("checkoutStatus");status.textContent="Preparing checkout…";
- try{
-  const amount=el("package").value;
-  const packageId=({"99":"single","395.99":"five","699.95":"ten"})[amount];
-  const response=await fetch(apiBase+"/checkout",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({packageId})});
-  const result=await response.json();if(!response.ok||!result.url)throw Error(result.error||"Checkout unavailable");
-  location.assign(result.url);
- }catch(e){status.textContent=e.message;}
+
+// Direct customer order: email-based request, no payment processor.
+el("directOrder")?.addEventListener("submit",event=>{
+ event.preventDefault();
+ const packageName=el("package").value,name=el("orderName").value.trim(),email=el("orderEmail").value.trim(),story=el("orderStory").value.trim();
+ if(!name||!email||!story)return;
+ const subject="SPICA order request — "+packageName;
+ const body=["SPICA CUSTOM SONG ORDER","", "Package: "+packageName,"Name: "+name,"Email: "+email,"","Song request:",story,"","Please confirm availability and provide direct payment instructions. I understand no payment has been made."].join("\n");
+ el("checkoutStatus").textContent="Your email app will open with the order prepared. Please send it to complete your request.";
+ location.href="mailto:rahu.records978@gmail.com?subject="+encodeURIComponent(subject)+"&body="+encodeURIComponent(body);
 });
