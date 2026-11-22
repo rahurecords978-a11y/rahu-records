@@ -1,0 +1,14 @@
+rules_version = '2';
+service firebase.storage {
+ match /b/{bucket}/o {
+  function signedIn() { return request.auth != null; }
+  function admin() { return signedIn() && request.auth.token.admin == true; }
+  function approved() { return signedIn() && request.auth.token.artistApproved == true; }
+  match /artist-uploads/{uid}/{file=**} {
+   allow read: if admin() || (signedIn() && request.auth.uid == uid);
+   allow write: if (admin() || (approved() && request.auth.uid == uid)) && request.resource.size < 200 * 1024 * 1024 && (request.resource.contentType.matches('audio/.*') || request.resource.contentType.matches('image/.*') || request.resource.contentType.matches('video/.*'));
+  }
+  match /public-media/{file=**} { allow read: if true; allow write: if admin(); }
+  match /{file=**} { allow read, write: if false; }
+ }
+}
