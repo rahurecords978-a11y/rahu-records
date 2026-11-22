@@ -47,4 +47,22 @@ app.post("/stripe-webhook",express.raw({type:"application/json"}),async(req,res)
   res.json({received:true});
  }catch(e){res.status(400).send("Invalid webhook");}
 });
+
+// Administrator-only artist approval and server-side role assignment.
+app.post("/approve-artist",express.json(),async(req,res)=>{
+ try{
+  const header=req.get("Authorization")||"";
+  if(!header.startsWith("Bearer "))return res.status(401).json({error:"Authentication required"});
+  const caller=await admin.auth().verifyIdToken(header.slice(7),true);
+  if(caller.admin!==true)return res.status(403).json({error:"Administrator required"});
+  const uid=String(req.body?.uid||"");
+  if(!/^[A-Za-z0-9_-]{10,128}$/.test(uid))return res.status(400).json({error:"Invalid user"});
+  const user=await admin.auth().getUser(uid);
+  const claims={...(user.customClaims||{}),artistApproved:true};
+  await admin.auth().setCustomUserClaims(uid,claims);
+  await admin.firestore().collection("artists").doc(uid).update({approved:true,approvedAt:admin.firestore.FieldValue.serverTimestamp()});
+  res.json({approved:true,uid});
+ }catch(e){console.error(e);res.status(500).json({error:"Approval failed"});}
+});
+
 exports.api=onRequest({secrets:[stripeKey,webhookKey],region:"us-east1"},app);
