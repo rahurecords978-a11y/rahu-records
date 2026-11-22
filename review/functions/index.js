@@ -9,6 +9,7 @@ const stripeKey=defineSecret("STRIPE_SECRET_KEY");
 const webhookKey=defineSecret("STRIPE_WEBHOOK_SECRET");
 const app=express();
 const prices={single:9900,five:39599,ten:69995};
+const invoicePrices={single:9900,five:39599,ten:69995};
 const origin=process.env.PUBLIC_SITE_ORIGIN;
 app.post("/api/checkout",express.json(),async(req,res)=>{
  try {
@@ -39,13 +40,33 @@ app.post("/api/free-demo",express.json(),async(req,res)=>{
 app.post("/api/stripe-webhook",express.raw({type:"application/json"}),async(req,res)=>{
  try {
   const stripe=new Stripe(stripeKey.value());
-  const event=stripe.webhooks.constructEvent(req.body,req.get("stripe-signature"),webhookKey.value());
-  if(event.type==="checkout.session.completed"){
+  const event=stripe.webhooks.constructEvent(req.rawBody||req.body,req.get("stripe-signature"),webhookKey.value());
+  if(event.type==="checkout.session.completed"||event.type==="checkout.session.async_payment_succeeded"||event.type==="checkout.session.async_payment_failed"){
    const s=event.data.object;
-   await admin.firestore().collection("orders").doc(s.id).set({packageId:s.metadata?.packageId,amountCents:s.amount_total,paymentStatus:s.payment_status,customerEmail:s.customer_details?.email||null,createdAt:admin.firestore.FieldValue.serverTimestamp()},{merge:true});
+   await admin.firestore().collection("orders").doc(s.id).set({packageId:s.metadata?.packageId,amountCents:s.amount_total,paymentStatus:s.payment_status,checkoutEvent:event.type,customerEmail:s.customer_details?.email||null,createdAt:admin.firestore.FieldValue.serverTimestamp()},{merge:true});
   }
+  if(event.type==="charge.refunded"){const charge=event.data.object;await admin.firestore().collection("stripeEvents").doc(event.id).set({type:event.type,chargeId:charge.id,refunded:charge.amount_refunded,createdAt:admin.firestore.FieldValue.serverTimestamp()});}
   res.json({received:true});
  }catch(e){res.status(400).send("Invalid webhook");}
+});
+
+
+// Administrator-only invoice creation: no invoice is finalized or sent without explicit action.
+app.post("/api/create-invoice",express.json(),async(req,res)=>{
+ try{
+  const bearer=req.get("Authorization")||"";
+  if(!bearer.startsWith("Bearer "))return res.status(401).json({error:"Sign in required"});
+  const caller=await admin.auth().verifyIdToken(bearer.slice(7),true);
+  if(caller.admin!==true)return res.status(403).json({error:"Administrator required"});
+  const email=String(req.body?.customerEmail||"").trim(),packageId=String(req.body?.packageId||"");
+  if(!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)||!Object.hasOwn(invoicePrices,packageId))return res.status(400).json({error:"Invalid invoice details"});
+  const stripe=new Stripe(stripeKey.value());
+  const customers=await stripe.customers.list({email,limit:1});
+  const customer=customers.data[0]||await stripe.customers.create({email});
+  const invoice=await stripe.invoices.create({customer:customer.id,collection_method:"send_invoice",days_until_due:14,auto_advance:false,metadata:{packageId}});
+  await stripe.invoiceItems.create({customer:customer.id,invoice:invoice.id,amount:invoicePrices[packageId],currency:"usd",description:"SPICA custom songs — "+packageId});
+  res.status(201).json({invoiceId:invoice.id,status:invoice.status,customerId:customer.id});
+ }catch(e){console.error(e);res.status(500).json({error:"Invoice creation failed"});}
 });
 
 // Administrator-only artist approval and server-side role assignment.
