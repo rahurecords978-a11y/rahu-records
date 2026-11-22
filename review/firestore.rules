@@ -1,0 +1,22 @@
+rules_version = '2';
+service cloud.firestore {
+ match /databases/{database}/documents {
+  function signedIn() { return request.auth != null; }
+  function admin() { return signedIn() && request.auth.token.admin == true; }
+  function artist() { return signedIn() && request.auth.token.artistApproved == true; }
+  match /artists/{id} {
+   allow read: if resource.data.approved == true || admin() || (signedIn() && request.auth.uid == id);
+   allow create: if signedIn() && request.auth.uid == id && request.resource.data.approved == false && request.resource.data.keys().hasOnly(['displayName','bio','approved','createdAt']);
+   allow update, delete: if admin();
+  }
+  match /releases/{id} {
+   allow read: if resource.data.published == true || admin() || (signedIn() && resource.data.ownerUid == request.auth.uid);
+   allow create: if artist() && request.resource.data.ownerUid == request.auth.uid && request.resource.data.published == false;
+   allow update: if admin() || (artist() && resource.data.ownerUid == request.auth.uid && request.resource.data.ownerUid == request.auth.uid && request.resource.data.published == false);
+   allow delete: if admin();
+  }
+  match /orders/{id} { allow read: if admin() || (signedIn() && resource.data.customerUid == request.auth.uid); allow write: if false; }
+  match /demoRequests/{id} { allow read: if admin() || (signedIn() && resource.data.customerUid == request.auth.uid); allow write: if false; }
+  match /{document=**} { allow read, write: if false; }
+ }
+}
