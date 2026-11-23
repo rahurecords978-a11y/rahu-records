@@ -6,14 +6,26 @@ service cloud.firestore {
   function artist() { return signedIn() && request.auth.token.artistApproved == true; }
   match /artists/{id} {
    allow read: if resource.data.approved == true || admin() || (signedIn() && request.auth.uid == id);
-   allow create: if signedIn() && request.auth.uid == id && request.resource.data.approved == false && request.resource.data.keys().hasOnly(['displayName','bio','approved','createdAt']);
+   allow create: if signedIn() && request.auth.uid == id
+    && request.resource.data.keys().hasOnly(['displayName','bio','approved','createdAt'])
+    && request.resource.data.approved == false
+    && request.resource.data.displayName is string
+    && request.resource.data.bio is string
+    && request.resource.data.displayName.size() > 0
+    && request.resource.data.displayName.size() <= 100
+    && request.resource.data.bio.size() <= 1500;
    allow update, delete: if admin();
   }
   match /releases/{id} {
    allow read: if resource.data.published == true || admin() || (signedIn() && resource.data.ownerUid == request.auth.uid);
-   allow create: if artist() && request.resource.data.ownerUid == request.auth.uid && request.resource.data.published == false;
-   allow update: if admin() || (artist() && resource.data.ownerUid == request.auth.uid && request.resource.data.ownerUid == request.auth.uid && request.resource.data.published == false);
-   allow delete: if admin();
+   allow create: if artist() && request.resource.data.ownerUid == request.auth.uid
+    && request.resource.data.published == false
+    && request.resource.data.keys().hasOnly(['ownerUid','title','storagePath','published','createdAt'])
+    && request.resource.data.title is string && request.resource.data.title.size() > 0
+    && request.resource.data.title.size() <= 180
+    && request.resource.data.storagePath is string
+    && request.resource.data.storagePath.matches('artist-uploads/' + request.auth.uid + '/.*');
+   allow update, delete: if admin();
   }
   match /orders/{id} { allow read: if admin() || (signedIn() && resource.data.customerUid == request.auth.uid); allow write: if false; }
   match /demoRequests/{id} { allow read: if admin() || (signedIn() && resource.data.customerUid == request.auth.uid); allow write: if false; }
