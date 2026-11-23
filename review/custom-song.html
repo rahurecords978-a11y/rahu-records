@@ -202,20 +202,30 @@
           <div class="step" data-step="5" id="contact">
             <div class="step-label">Step 5 of 5</div>
             <h3>Contact & submit</h3>
-            <p class="hint">Your request will open your email app addressed to R.A.H.U. Records.</p>
+            <p class="hint">Pay directly through Chime or Zelle, then prepare your complete song request in Gmail. You must press Send in Gmail to deliver the request.</p>
             <div class="fields">
               <label class="field"><span>Your name</span><input name="Customer Name" required placeholder="Full name"></label>
               <label class="field"><span>Email</span><input name="Customer Email" type="email" required placeholder="you@example.com"></label>
               <label class="field"><span>Phone / social</span><input name="Phone or Social" placeholder="Optional"></label>
               <label class="field"><span>Preferred delivery</span><select name="Preferred Delivery"><option>Standard</option><option>Rush</option><option>No deadline</option></select></label>
               <label class="field full"><span>Final message</span><textarea name="Final Message" placeholder="Anything else R.A.H.U. Records should know?"></textarea></label>
+              <div class="field full" style="padding:20px;border:1px solid #c9a227;border-radius:12px">
+                <h3>Direct payment — Chime or Zelle</h3>
+                <p>Pay the amount for your selected package. Payment goes directly to R.A.H.U. RECORDS. Your order is not marked paid until the payment is verified.</p>
+                <p><a class="btn" href="https://app.chime.com/link/qr?u=Aranya-Keung" target="_blank" rel="noopener noreferrer">Pay with Chime</a></p>
+                <p>Chime: <strong>$Aranya-Keung</strong></p>
+                <p><strong>Zelle:</strong> Use the verified Zelle payment details supplied by R.A.H.U. RECORDS. Do not send Zelle payments to an unverified address.</p>
+                <label class="field"><span>Payment method</span><select name="Payment Method" required><option value="">Choose payment method</option><option value="Chime">Chime</option><option value="Zelle">Zelle</option></select></label>
+                <label class="field"><span>Payment reference / confirmation (optional)</span><input name="Payment Reference" maxlength="150" placeholder="Transaction reference; do not enter card or bank account numbers"></label>
+                <p style="font-size:.9em">After payment, click Submit Request. Gmail will open a draft with your song details and invoice summary. Press <strong>Send</strong> in Gmail to complete your request.</p>
+              </div>
             </div>
           </div>
 
           <div class="form-actions">
             <button type="button" class="btn secondary" id="prevBtn">Back</button>
             <button type="button" class="btn" id="nextBtn">Next</button>
-            <button type="submit" class="btn" id="submitBtn" style="display:none">Submit Request</button>
+            <button type="submit" class="btn" id="submitBtn" style="display:none">Review &amp; submit through Gmail</button>
           </div>
         </form>
       </div>
@@ -272,11 +282,18 @@
       event.preventDefault();
       const form=event.currentTarget;
       if(!form.reportValidity())return;
-      const data=new FormData(form),lines=['SPICA CUSTOM SONG REQUEST',''];
-      for(const [key,value] of data.entries())lines.push(key+': '+value);
-      lines.push('','Please confirm my order and send direct payment instructions. No payment has been made.');
-      const subject='SPICA order — '+(data.get('Package')||'Custom song');
-      window.location.href='mailto:rahu.records978@gmail.com?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(lines.join('\\n'));
+      const data=new FormData(form);
+      const packageName=String(data.get('Package')||'');
+      const amount=packageName.includes('395.99')?'$395.99':packageName.includes('699.95')?'$699.95':'$99.00';
+      const orderId='SPICA-'+Date.now().toString(36).toUpperCase();
+      const lines=['R.A.H.U. RECORDS / SPICA','CUSTOM SONG ORDER & INVOICE REQUEST','Order reference: '+orderId,'Package: '+packageName,'Amount due: '+amount,'Payment method: '+data.get('Payment Method'),'Payment status: AWAITING MANUAL VERIFICATION','','CUSTOM SONG DETAILS'];
+      for(const [key,value] of data.entries())if(key!=='Package'&&key!=='Payment Method')lines.push(key+': '+value);
+      lines.push('','Payment must be verified by R.A.H.U. RECORDS before production.','This is an order request, not proof of payment.');
+      const subject='SPICA order '+orderId+' — '+packageName;
+      const gmail='https://mail.google.com/mail/?view=cm&fs=1&to='+encodeURIComponent('rahu.records978@gmail.com')+'&su='+encodeURIComponent(subject)+'&body='+encodeURIComponent(lines.join('\\n'));
+      const opened=window.open(gmail,'_blank','noopener,noreferrer');
+      if(!opened){window.location.href=gmail;}
+      else alert('Gmail is opening with your order. Press Send in Gmail to deliver it to R.A.H.U. RECORDS. Payment will be verified before production.');
     });
     showStep();updateSummary();
   </script>
